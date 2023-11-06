@@ -1,9 +1,15 @@
 127.0.0.1 localhost
-${join(" ", master_0_private_ips)} master-0
-${join(" ", master_1_private_ips)} master-1
-${join(" ", master_2_private_ips)} master-2
 
-${join(" ", haproxy_private_ips)} control.oblivionone.com
+%{ for index, ip in master_ips }
+${ip} master-0
+${ip} master-1
+${ip} master-2
+%{ endfor }
+
+
+%{ for index, ip in haproxy_ip }
+${ip} control.oblivionone.com
+%{ endfor }
 
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters

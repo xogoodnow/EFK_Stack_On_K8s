@@ -29,7 +29,7 @@
         name: "{{ item }}"
       with_items:
         - $PWD/roles/Pre_setup
-        - $PWD/roles/Haproxy
+        - $PWD/roles/haproxy
       when: "'haproxy' in mode"
 
 
