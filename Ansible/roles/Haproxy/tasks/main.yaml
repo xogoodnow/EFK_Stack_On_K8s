@@ -57,15 +57,15 @@
 
 
 
-- name: pull haproxy latest image
+- name: pull Haproxy latest image
   docker_image:
-    name: haproxy:{{ haproxy_version }}
+    name: Haproxy:{{ haproxy_version }}
     source: pull
 
 
-- name: create a directory for haproxy config
+- name: create a directory for Haproxy config
   file:
-    path: /root/haproxy/
+    path: /root/Haproxy/
     owner: root
     group: root
     mode: "0755"
@@ -74,26 +74,26 @@
 
 
 
-- name: craete the haproxy.cfg file from template
+- name: craete the Haproxy.cfg file from template
   template:
-    dest: /root/haproxy/haproxy.cfg
-    src: templates/haproxy.cfg.j2
+    dest: /root/Haproxy/Haproxy.cfg
+    src: templates/Haproxy.cfg.j2
   notify:
-  - restart haproxy container
+  - restart Haproxy container
 
 
 
 
-- name: run the haproxy container
+- name: run the Haproxy container
   docker_container:
-    name: haproxy
-    image: haproxy:{{ haproxy_version }}
+    name: Haproxy
+    image: Haproxy:{{ haproxy_version }}
     state: started
     restart_policy: always
     ports:
       - '6443:6443'
     volumes:
-      - /root/haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - /root/Haproxy/Haproxy.cfg:/usr/local/etc/Haproxy/Haproxy.cfg
 
 
 

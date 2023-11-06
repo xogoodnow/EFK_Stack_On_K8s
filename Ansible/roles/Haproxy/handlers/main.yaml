@@ -1,7 +1,7 @@
 ---
-- name: restart haproxy container
+- name: restart Haproxy container
   docker_container:
-    name: haproxy
+    name: Haproxy
     restart: true
   ignore_errors: yes
 
