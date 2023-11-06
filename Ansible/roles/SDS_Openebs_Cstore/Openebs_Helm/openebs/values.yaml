@@ -713,7 +713,7 @@ cstor:
   # | - cstor(enable)
   # | | - openebs-ndm(disable)
   # | - openebs-ndm(enable)
-  enabled: false
+  enabled: true
   openebsNDM:
     enabled: false
 
