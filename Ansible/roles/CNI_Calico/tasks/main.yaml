@@ -13,13 +13,13 @@
 
 - name: Get the Tigera operator manifest
   get_url:
-    url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.3/manifests/tigera-operator.yaml
     dest: /root/calico_manifests/tigera-operator.yaml
 
 
 - name: Get the custom resources for calico
   get_url:
-    url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.3/manifests/custom-resources.yaml
     dest: /root/calico_manifests/custom-resources.yaml
 
 
