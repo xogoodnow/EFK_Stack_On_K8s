@@ -10,9 +10,9 @@
   register: kubeadm_images
   changed_when: "'Image pull complete' in kubeadm_images.stdout"
 
-- name: Display Haproxy IP address
+- name: Display haproxy IP address
   debug:
-    msg: "The IP address of the 'Haproxy' host is {{ hostvars['Haproxy']['ansible_host'] }}"
+    msg: "The IP address of the 'haproxy' host is {{ hostvars['haproxy']['ansible_host'] }}"
 
 
 - name: Initialize Kubernetes master
