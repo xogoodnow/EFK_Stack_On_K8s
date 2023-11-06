@@ -1,0 +1,128 @@
+---
+- name: setting up k8s cluster
+  hosts: all
+  become: true
+  tasks:
+    - name: Include variables
+      include_vars: "all.yaml"
+    - name: Setting the basis on all nodes
+      include_role:
+        name: "{{ item }}"
+      with_items:
+        - $PWD/roles/Pre_Setup
+        - $PWD/roles/Pre_k8s_setup
+        - $PWD/roles/Install_crio
+        - $PWD/roles/Install_Helm
+      when: "mode != 'haproxy'"
+
+
+    - name: install kubeadm and kubectl
+      include_role:
+        name: "{{ item }}"
+      with_items:
+        - $PWD/roles/Install_kube_adm_ctl_let
+      when: "mode != 'haproxy'"
+
+
+    - name: Run role on haproxy host
+      include_role:
+        name: "{{ item }}"
+      with_items:
+        - $PWD/roles/Pre_setup
+        - $PWD/roles/Haproxy
+      when: "'haproxy' in mode"
+
+
+
+    - name: Run role on first host in hosts group
+      include_role:
+        name: $PWD/roles/Init_k8s
+      when: "'true' in init_master"
+
+
+- name: Join other masters
+  hosts: all
+  become: true
+  serial: 1
+  tasks:
+    - name: Run role on other master hosts
+      include_role:
+        name: $PWD/roles/Join_masters
+      when: mode == 'master' and init_master == 'false'
+
+
+
+- name: Set up CNI and CSI
+  become: true
+  serial: 1
+  hosts: all
+  tasks:
+    - name: Install Calico
+      include_role:
+        name: $PWD/roles/CNI_Calico
+      when: mode == 'master' and init_master == 'true'
+
+    - name: Install the Openebs Helm chart
+      include_role:
+        name: $PWD/roles/SDS_Openebs_Cstore/Openebs_Helm
+      when: mode == 'master' and init_master == 'true'
+
+
+    - name: Generate the required resources for Openebs (Cstore mode)
+      include_role:
+        name: $PWD/roles/SDS_Openebs_Cstore/Cstore_Config
+      when: mode == 'master' and init_master == 'true'
+
+
+    - name: Install the Openebs resources
+      include_role:
+        name: $PWD/roles/SDS_Openebs_Cstore/Apply_Openebs_Resources
+      when: mode == 'master' and init_master == 'true'
+
+
+- name: Make the cluster operation ready
+  become: true
+  serial: 1
+  hosts: all
+  tasks:
+
+    - name: Installing ingress controller
+      include_role:
+        name: $PWD/roles/Ingress
+      when: mode == 'master' and init_master == 'true'
+
+    - name: Installing Cert Manager
+      include_role:
+        name: $PWD/roles/Cert_manager
+      when: mode == 'master' and init_master == 'true'
+
+
+#    - name: Installing Monitoring for the cluster
+#      include_role:
+#        name: $PWD/roles/Monitoring/Monitoring_Stack
+#      when: mode == 'master' and init_master == 'true'
+#
+#    - name: Exposing the metrics for core components of the cluster
+#      include_role:
+#        name: $PWD/roles/Monitoring/Exposing_Metrics
+#      when: mode == 'master'
+
+
+#- name: Implement backup procedure for etcd
+#  become: true
+#  hosts: all
+#  tasks:
+#    - name: Configuring connection with S3bucket
+#      include_role:
+#        name: $PWD/roles/Automate_Etcd_Backup_Setup/Configure_S3cmd
+#      when: mode == 'master'
+#
+#
+#    - name: Adding a cron job to backup ETCD
+#      include_role:
+#        name: $PWD/roles/Automate_Etcd_Backup_Setup/Backup_Cron_Job
+#      when: mode == 'master'
+#
+#
+
+
