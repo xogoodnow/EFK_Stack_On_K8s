@@ -30,7 +30,7 @@ module "volume" {
 
 
 module "k8s" {
-  source = "./modules/Gitlab"
+  source = "./modules/K8s"
   hcloud_token = var.hcloud_token
   depends_on = [module.volume]
 }
