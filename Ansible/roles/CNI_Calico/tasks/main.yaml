@@ -1,0 +1,48 @@
+---
+- name: Check for connectivity
+  ping:
+    data: alive
+- name: Create a directory for the manifest
+  file:
+    path: /root/calico_manifests
+    state: directory
+    group: root
+    owner: root
+    mode: 0755
+
+
+- name: Get the Tigera operator manifest
+  get_url:
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/tigera-operator.yaml
+    dest: /root/calico_manifests/tigera-operator.yaml
+
+
+- name: Get the custom resources for calico
+  get_url:
+    url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/custom-resources.yaml
+    dest: /root/calico_manifests/custom-resources.yaml
+
+
+- name: apply manifest tigera-operator manifest
+  kubernetes.core.k8s:
+    src: "/root/calico_manifests/tigera-operator.yaml"
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+
+
+- name: Waiting for the operator so it would finish up its set up
+  pause:
+    seconds: 40
+
+
+- name: apply manifest Calico custom-resources
+  kubernetes.core.k8s:
+    src: "/root/calico_manifests/custom-resources.yaml"
+    state: present
+    kubeconfig: /etc/kubernetes/admin.conf
+
+- name: Waiting for the operator so it would finish up its set up
+  pause:
+    seconds: 40
+
+
