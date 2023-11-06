@@ -18,17 +18,22 @@
 #    src: files/openebs
 #    force: true
 
-- name: Download the chart for openebs
-  get_url:
-    url: https://helmcharts.s3.ir-thr-at1.arvanstorage.ir/openebs.tar
+#- name: Download the chart for openebs
+#  get_url:
+#    url: https://helmcharts.s3.ir-thr-at1.arvanstorage.ir/openebs.tar
+#    dest: /root/openebs_config/
+
+- name: copy the chart to the server
+  copy:
+    src: files/openebs.tar
     dest: /root/openebs_config/
+
 
 - name: Unarchive the openebs chart files
   unarchive:
     src: /root/openebs_config/openebs.tar
     dest: /root/openebs_config/
     remote_src: true
-
 
 
 
