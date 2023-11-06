@@ -28,8 +28,8 @@
       include_role:
         name: "{{ item }}"
       with_items:
-        - $PWD/roles/Pre_setup
-        - $PWD/roles/haproxy
+        - $PWD/roles/Pre_Setup
+        - $PWD/roles/Haproxy
       when: "'haproxy' in mode"
 
 
