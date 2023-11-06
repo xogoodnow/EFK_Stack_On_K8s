@@ -1,0 +1,43 @@
+---
+- name: Checking for connectivity
+  ping:
+    data: alive
+
+
+
+- name: Apply The cspc for Openebs
+  kubernetes.core.k8s:
+    src: "/root/openebs_config/cspc.yaml"
+    state: present
+    apply: true
+    kubeconfig: /etc/kubernetes/admin.conf
+
+
+- name: Waiting for the operator so it would finish up its set up
+  pause:
+    seconds: 40
+
+
+- name: Apply the storage class for the cluster
+  kubernetes.core.k8s:
+    src: "/root/openebs_config/Storage_Class.yaml"
+    state: present
+    apply: true
+    kubeconfig: /etc/kubernetes/admin.conf
+
+
+#- name: Make kang-sc the default storage class for all PVCs
+#  shell: kubectl patch storageclass kang-sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+#  failed_when: false
+
+- name: Make {{ storage_class }} the default storage class for all PVCs
+  kubernetes.core.k8s:
+    state: patched
+    definition:
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: {{ storage_class }}
+        annotations:
+          storageclass.kubernetes.io/is-default-class: "true"
+  ignore_errors: true
