@@ -1,0 +1,46 @@
+---
+- name: check connectivity
+  ping:
+    data: alive
+
+- name: Create a directory for Kibana
+  file:
+    path: /root/Kibana
+    owner: root
+    group: root
+    mode: 0755
+    state: directory
+
+- name: Copy the files to the directory
+  copy:
+    dest: /root/Kibana/
+    src: files/
+
+- name: Create Kibana
+  kubernetes.core.k8s:
+    src: "/root/Kibana/Kibana/kibana.yaml"
+    state: present
+    namespace: elastic-system
+    apply: true
+    kubeconfig: /etc/kubernetes/admin.conf
+
+
+- name: The password of kibana
+  command:
+    cmd: !unsafe "kubectl get secret kang-elastic-es-elastic-user -n elastic-system -o go-template='{{.data.elastic | base64decode}}'"
+  register: elastic_password
+
+
+- name: Printing the password to log in to kibana
+  debug:
+    var: elastic_password
+
+- name: Create ingress for kibana
+  kubernetes.core.k8s:
+    src: "/root/Kibana/Kibana_Ingress.yaml"
+    state: present
+    namespace: elastic-system
+    apply: true
+    kubeconfig: /etc/kubernetes/admin.conf
+
+
