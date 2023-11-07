@@ -14,9 +14,6 @@ metadata:
 {{ toYaml .Values.controller.service.annotations | indent 4 }}
 {{- end }}
 spec:
-{{- if .Values.controller.service.clusterIP }}
-  clusterIP: {{ .Values.controller.service.clusterIP }}
-{{- end }}
 {{- if or (eq .Values.controller.service.type "LoadBalancer") (eq .Values.controller.service.type "NodePort") }}
   {{- if .Values.controller.service.externalTrafficPolicy }}
   externalTrafficPolicy: {{ .Values.controller.service.externalTrafficPolicy }}
