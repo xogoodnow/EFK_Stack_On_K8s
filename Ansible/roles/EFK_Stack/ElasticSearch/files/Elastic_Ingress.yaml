@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kang-elastic
+  namespace: elastic-system
+  annotations:
+    cert-manager.io/cluster-issuer: prod-issuer
+    acme.cert-manager.io/http01-edit-in-place: "true"
+
+    ingress.kubernetes.io/ssl-redirect: "True"
+    nginx.org/ssl-services: "kang-elastic-es-internal-http"
+
+
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - elastic.oblivionone.com
+    secretName: kang-ingress-secret
+  rules:
+  - host: elastic.oblivionone.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kang-elastic-es-internal-http
+            port:
+              number: 9200
